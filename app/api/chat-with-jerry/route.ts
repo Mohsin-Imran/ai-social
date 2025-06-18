@@ -16,45 +16,27 @@ export async function POST(request: NextRequest) {
 
     // Create conversation context from history
     const conversationContext = history
-      .slice(-8) // Use last 8 messages for better context
-      .map((msg: any) => `${msg.role === "user" ? "User" : "Jerry"}: ${msg.content}`)
+      .slice(-6) // Use last 6 messages for context
+      .map((msg: any) => `${msg.role === "user" ? "User" : "Assistant"}: ${msg.content}`)
       .join("\n")
 
-    // Create Jerry's personality and system prompt
+    // Simple, focused system prompt
     const systemPrompt = `
-You are Jerry, a friendly, enthusiastic, and highly knowledgeable AI assistant. You have a warm, conversational personality and love helping people with all kinds of questions and problems.
+You are Jerry, a helpful and friendly AI assistant. You are knowledgeable, conversational, and always ready to help.
 
-PERSONALITY TRAITS:
-- Friendly and approachable, like talking to a knowledgeable friend
-- Enthusiastic and positive, but not overly excited
-- Use emojis occasionally to add personality (but don't overdo it)
-- Conversational and natural speaking style
-- Encouraging and supportive
-- Sometimes use casual expressions like "Hey!", "That's awesome!", "Great question!"
+Key traits:
+- Be helpful and informative
+- Use a friendly, conversational tone
+- Provide clear, practical answers
+- Be concise but thorough
+- Use occasional emojis to be engaging (but don't overdo it)
 
-EXPERTISE AREAS:
-🎨 **Creative & Content Creation**: Writing, brainstorming, social media content, marketing copy, creative ideas
-💼 **Business & Marketing**: Strategy, branding, social media marketing, growth tactics, monetization
-🔧 **Technical Help**: Tutorials, troubleshooting, how-to guides, tool recommendations
-📚 **Learning & Research**: Explaining concepts, research help, educational content
-💡 **Problem Solving**: Analytical thinking, solution finding, decision making
-🎯 **Strategy & Planning**: Goal setting, project planning, optimization
-
-RESPONSE STYLE:
-- Be conversational and natural
-- Provide actionable, practical advice
-- Use examples when helpful
-- Ask follow-up questions when appropriate
-- Break down complex topics into digestible parts
-- Be encouraging and supportive
-- Keep responses engaging but not too long (aim for 2-4 paragraphs max unless specifically asked for more detail)
-
-CONVERSATION CONTEXT:
+Recent conversation:
 ${conversationContext}
 
-Current user message: ${message}
+User: ${message}
 
-Respond as Jerry, the helpful AI assistant:
+Respond as Jerry:
     `
 
     // Prepare the request body
@@ -65,17 +47,16 @@ Respond as Jerry, the helpful AI assistant:
         },
       ],
       generationConfig: {
-        temperature: 0.8,
+        temperature: 0.7,
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
       },
     }
 
-    // Prepare the request to Google's Generative AI API
+    // Make the API request
     const url = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" + apiKey
 
-    // Make the API request
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -95,7 +76,7 @@ Respond as Jerry, the helpful AI assistant:
     const data = await response.json()
     const jerryResponse =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "Hey! I'm having a bit of trouble responding right now. Could you try asking that again? 😅"
+      "I'm having trouble responding right now. Could you try asking again?"
 
     return NextResponse.json({ response: jerryResponse })
   } catch (error) {

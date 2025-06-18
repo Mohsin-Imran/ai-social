@@ -4,7 +4,6 @@ import type React from "react"
 
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Minus, Plus, AlignLeft } from "lucide-react"
 
@@ -49,64 +48,51 @@ export function LineCountSelector({ lineCount, setLineCount }: LineCountSelector
     }
   }
 
-  // Preset values
   const presets = [5, 10, 25, 50, 100]
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center space-x-2">
-        <AlignLeft className="h-4 w-4 text-purple-500" />
-        <Label htmlFor="lineCount" className="text-sm font-medium">
-          Content Length (lines)
-        </Label>
+        <AlignLeft className="w-4 h-4 text-purple-400" />
+        <span className="text-sm font-medium text-slate-300">Content Length (lines)</span>
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-3">
         <Button
-          type="button"
-          variant="outline"
-          size="icon"
           onClick={decrement}
           disabled={lineCount <= 1}
-          className="h-9 w-9 rounded-md border-gray-200"
+          className="w-10 h-10 p-0 glass-button text-white hover:bg-green-500 hover:border-green-400 rounded-lg transition-all duration-200"
         >
-          <Minus className="h-4 w-4" />
+          <Minus className="w-4 h-4" />
         </Button>
         <Input
-          id="lineCount"
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          className="h-9 w-24 text-center"
+          className="w-20 text-center glass-card border-white/20 focus:border-blue-400 text-white bg-blue-500/20 focus:bg-blue-500/30"
         />
         <Button
-          type="button"
-          variant="outline"
-          size="icon"
           onClick={increment}
-          className="h-9 w-9 rounded-md border-gray-200"
+          className="w-10 h-10 p-0 glass-button text-white hover:bg-green-500 hover:border-green-400 rounded-lg transition-all duration-200"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="w-4 h-4" />
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-2">
+      <div className="flex flex-wrap gap-2">
         {presets.map((preset) => (
           <Button
             key={preset}
-            type="button"
-            variant="outline"
-            size="sm"
             onClick={() => {
               setLineCount(preset)
               setInputValue(preset.toString())
             }}
-            className={`px-3 py-1 text-xs ${
+            className={`px-3 py-1 text-xs rounded-lg transition-all duration-200 ${
               lineCount === preset
-                ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white border-transparent"
-                : "border-gray-200 hover:border-purple-300 hover:bg-purple-50"
+                ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                : "glass-button text-slate-300 hover:text-white hover:bg-green-500 hover:border-green-400"
             }`}
           >
             {preset} lines

@@ -1,7 +1,7 @@
 "use client"
 
-import { RadioGroup } from "@/components/ui/radio-group"
-import type { Tone } from "./content-generator"
+import { Button } from "@/components/ui/button"
+import type { Tone } from "@/types"
 
 interface ToneSelectorProps {
   tone: Tone
@@ -10,29 +10,60 @@ interface ToneSelectorProps {
 
 export function ToneSelector({ tone, setTone }: ToneSelectorProps) {
   const tones = [
-    { value: "professional", label: "Professional", emoji: "💼", color: "from-gray-500 to-gray-700" },
-    { value: "casual", label: "Casual", emoji: "😊", color: "from-green-500 to-teal-500" },
-    { value: "humorous", label: "Humorous", emoji: "😄", color: "from-yellow-500 to-orange-500" },
-    { value: "inspirational", label: "Inspirational", emoji: "✨", color: "from-purple-500 to-pink-500" },
+    {
+      id: "professional" as Tone,
+      name: "Professional",
+      emoji: "💼",
+      color: "from-gray-500 to-gray-700",
+      bgColor: "bg-gray-50 hover:bg-gray-100",
+      textColor: "text-gray-700",
+    },
+    {
+      id: "casual" as Tone,
+      name: "Casual",
+      emoji: "😊",
+      color: "from-green-500 to-teal-500",
+      bgColor: "bg-green-50 hover:bg-green-100",
+      textColor: "text-green-600",
+    },
+    {
+      id: "humorous" as Tone,
+      name: "Humorous",
+      emoji: "😄",
+      color: "from-yellow-500 to-orange-500",
+      bgColor: "bg-yellow-50 hover:bg-yellow-100",
+      textColor: "text-orange-600",
+    },
+    {
+      id: "inspirational" as Tone,
+      name: "Inspirational",
+      emoji: "✨",
+      color: "from-purple-500 to-pink-500",
+      bgColor: "bg-purple-50 hover:bg-purple-100",
+      textColor: "text-purple-600",
+    },
   ]
 
   return (
-    <RadioGroup value={tone} onValueChange={(value) => setTone(value as Tone)} className="grid grid-cols-2 gap-3">
-      {tones.map((toneOption) => (
-        <button
-          key={toneOption.value}
-          type="button"
-          onClick={() => setTone(toneOption.value as Tone)}
-          className={`flex flex-col items-center justify-center h-16 p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
-            tone === toneOption.value
-              ? `border-transparent bg-gradient-to-r ${toneOption.color} text-white shadow-lg scale-105`
-              : "border-gray-200 hover:border-gray-300"
-          }`}
-        >
-          <span className="text-xl mb-1">{toneOption.emoji}</span>
-          <span className="text-xs font-medium text-center">{toneOption.label}</span>
-        </button>
-      ))}
-    </RadioGroup>
+    <div className="grid grid-cols-2 gap-3">
+      {tones.map((t) => {
+        const isSelected = tone === t.id
+
+        return (
+          <Button
+            key={t.id}
+            onClick={() => setTone(t.id)}
+            className={`h-16 flex-col space-y-1 transition-all duration-300 button-hover ${
+              isSelected
+                ? `bg-gradient-to-r ${t.color} text-white shadow-md hover:shadow-lg`
+                : `${t.bgColor} ${t.textColor} border border-gray-200`
+            } rounded-lg`}
+          >
+            <span className="text-lg">{t.emoji}</span>
+            <span className="text-xs font-medium">{t.name}</span>
+          </Button>
+        )
+      })}
+    </div>
   )
 }

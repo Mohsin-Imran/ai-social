@@ -11,11 +11,10 @@ import { ToneSelector } from "@/components/tone-selector"
 import { LineCountSelector } from "@/components/line-count-selector"
 import { LanguageSelector, type Language } from "@/components/language-selector"
 import { CustomPromptInput } from "@/components/custom-prompt-input"
-import { Loader2, Sparkles, Zap } from "lucide-react"
+import { Loader2, Upload, Settings, Wand2, ImageIcon, Video } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ExtractedTextDisplay } from "@/components/extracted-text-display"
 
 export type Platform = "instagram" | "twitter" | "facebook" | "linkedin"
@@ -69,8 +68,6 @@ export function ContentGenerator() {
 
   const handleUseExtractedText = () => {
     if (!extractedText) return
-
-    // Generate content based on the extracted text
     handleGenerateFromText(extractedText)
   }
 
@@ -177,130 +174,147 @@ export function ContentGenerator() {
   const hasMedia = (activeTab === "image" && image) || (activeTab === "video" && video)
 
   return (
-    <div className="space-y-6">
-      {error && (
-        <Alert variant="destructive" className="border-red-200 bg-red-50">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Oops! Something went wrong</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      {/* Left Column - Upload and Settings */}
+      <div className="xl:col-span-2 space-y-6">
+        {error && (
+          <Alert variant="destructive" className="glass border-red-500/50 bg-red-500/10">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle className="text-red-400">Error</AlertTitle>
+            <AlertDescription className="text-red-300">{error}</AlertDescription>
+          </Alert>
+        )}
 
-      <Card className="overflow-hidden border-0 shadow-2xl bg-white/80 backdrop-blur-sm">
-        <div className="bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 p-1">
-          <CardContent className="bg-white rounded-lg p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Left Column - Upload and Settings */}
-              <div className="space-y-6">
-                {/* Media Upload Tabs */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="h-5 w-5 text-purple-500" />
-                    <h2 className="text-xl font-semibold text-gray-800">Upload Your Media</h2>
-                  </div>
+        {/* Media Upload */}
+        <Card className="glass-dark border-white/20 overflow-hidden">
+          <CardContent className="p-8">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                <Upload className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Upload Media</h2>
+                <p className="text-gray-400">Choose your image or video to transform</p>
+              </div>
+            </div>
 
-                  <Tabs defaultValue="image" onValueChange={(value) => setActiveTab(value as "image" | "video")}>
-                    <TabsList className="grid w-full grid-cols-2 bg-gradient-to-r from-purple-100 to-blue-100 p-1">
-                      <TabsTrigger
-                        value="image"
-                        className="data-[state=active]:bg-white data-[state=active]:text-purple-600 data-[state=active]:shadow-md transition-all duration-200"
-                      >
-                        📸 Image
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="video"
-                        className="data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-md transition-all duration-200"
-                      >
-                        🎥 Video
-                      </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="image" className="mt-4">
-                      <ImageUploader
-                        onImageUpload={handleImageUpload}
-                        imagePreview={imagePreview}
-                        onExtractText={handleExtractText}
-                      />
-                    </TabsContent>
-                    <TabsContent value="video" className="mt-4">
-                      <VideoUploader onVideoUpload={handleVideoUpload} videoPreview={videoPreview} />
-                    </TabsContent>
-                  </Tabs>
-                </div>
-
-                {/* Extracted Text Display */}
-                {extractedText && <ExtractedTextDisplay text={extractedText} onUseText={handleUseExtractedText} />}
-
-                {/* Custom Prompt Input */}
-                <CustomPromptInput
-                  customPrompt={customPrompt}
-                  setCustomPrompt={setCustomPrompt}
-                  onUsePrompt={handleUseCustomPrompt}
-                  isGenerating={isGenerating}
-                  hasMedia={hasMedia}
-                />
-
-                {/* Settings Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Line Count Selector */}
-                  <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
-                    <LineCountSelector lineCount={lineCount} setLineCount={setLineCount} />
-                  </div>
-
-                  {/* Language Selector */}
-                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                    <LanguageSelector language={language} setLanguage={setLanguage} />
-                  </div>
-                </div>
-
-                {/* Platform Selection */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-gradient-to-r from-pink-500 to-orange-500 rounded-full"></div>
-                    <h3 className="text-lg font-semibold text-gray-800">Choose Platform</h3>
-                  </div>
-                  <PlatformSelector platform={platform} setPlatform={setPlatform} />
-                </div>
-
-                {/* Tone Selection */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-full"></div>
-                    <h3 className="text-lg font-semibold text-gray-800">Select Tone</h3>
-                  </div>
-                  <ToneSelector tone={tone} setTone={setTone} />
-                </div>
-
-                {/* Generate Button */}
-                <Button
-                  onClick={handleGenerate}
-                  className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 hover:from-purple-600 hover:via-blue-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  disabled={isGenerating || !hasMedia}
+            <div className="glass rounded-xl p-1 mb-6">
+              <div className="flex space-x-1">
+                <button
+                  onClick={() => setActiveTab("image")}
+                  className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                    activeTab === "image"
+                      ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
+                      : "text-gray-400 hover:text-white"
+                  }`}
                 >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                      <span className="animate-pulse">
-                        Creating {lineCount} lines in {language}...
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="mr-3 h-5 w-5" />
-                      {customPrompt
-                        ? "Generate with Custom Prompt"
-                        : `Generate in ${language.charAt(0).toUpperCase() + language.slice(1)}`}{" "}
-                      ✨
-                    </>
-                  )}
-                </Button>
+                  <ImageIcon className="h-5 w-5" />
+                  <span>Image</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("video")}
+                  className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg font-medium transition-all ${
+                    activeTab === "video"
+                      ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  <Video className="h-5 w-5" />
+                  <span>Video</span>
+                </button>
+              </div>
+            </div>
+
+            {activeTab === "image" ? (
+              <ImageUploader
+                onImageUpload={handleImageUpload}
+                imagePreview={imagePreview}
+                onExtractText={handleExtractText}
+              />
+            ) : (
+              <VideoUploader onVideoUpload={handleVideoUpload} videoPreview={videoPreview} />
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Extracted Text */}
+        {extractedText && <ExtractedTextDisplay text={extractedText} onUseText={handleUseExtractedText} />}
+
+        {/* Custom Prompt */}
+        <CustomPromptInput
+          customPrompt={customPrompt}
+          setCustomPrompt={setCustomPrompt}
+          onUsePrompt={handleUseCustomPrompt}
+          isGenerating={isGenerating}
+          hasMedia={hasMedia}
+        />
+
+        {/* Settings */}
+        <Card className="glass-dark border-white/20">
+          <CardContent className="p-8">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                <Settings className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Customize</h2>
+                <p className="text-gray-400">Fine-tune your content generation</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="glass rounded-xl p-6">
+                <LineCountSelector lineCount={lineCount} setLineCount={setLineCount} />
+              </div>
+              <div className="glass rounded-xl p-6">
+                <LanguageSelector language={language} setLanguage={setLanguage} />
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+                  Platform
+                </h3>
+                <PlatformSelector platform={platform} setPlatform={setPlatform} />
               </div>
 
-              {/* Right Column - Content Display */}
-              <ContentDisplay content={content} isLoading={isGenerating} platform={platform} language={language} />
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                  <div className="w-2 h-2 bg-pink-500 rounded-full mr-3"></div>
+                  Tone
+                </h3>
+                <ToneSelector tone={tone} setTone={setTone} />
+              </div>
             </div>
           </CardContent>
-        </div>
-      </Card>
+        </Card>
+
+        {/* Generate Button */}
+        <Button
+          onClick={handleGenerate}
+          className="w-full h-16 text-xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-yellow-500 hover:from-purple-600 hover:via-pink-600 hover:to-yellow-600 text-white border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 rounded-xl"
+          disabled={isGenerating || !hasMedia}
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="mr-4 h-6 w-6 animate-spin" />
+              <span className="animate-pulse">Creating Magic...</span>
+            </>
+          ) : (
+            <>
+              <Wand2 className="mr-4 h-6 w-6" />
+              Generate Amazing Content
+            </>
+          )}
+        </Button>
+      </div>
+
+      {/* Right Column - Content Display */}
+      <div className="xl:col-span-1">
+        <ContentDisplay content={content} isLoading={isGenerating} platform={platform} language={language} />
+      </div>
     </div>
   )
 }
