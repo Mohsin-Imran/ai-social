@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "AI Social Media Content Creator",
   description: "Transform your images and videos into engaging social media content with AI",
-    generator: 'v0.dev'
+    generator: 'AI Content'
 }
 
 export default function RootLayout({
@@ -21,8 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
           <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -5,7 +5,7 @@ const DEFAULT_API_KEY = "AIzaSyB8ZE3ZiN-Tl72Xc_LxvO_fyIiR_2z4p2Q"
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, platform, tone, lineCount = 10 } = await request.json()
+    const { text, platform, tone, lineCount = 10, language = "english", customPrompt = "" } = await request.json()
 
     if (!text) {
       return NextResponse.json({ error: "No text provided" }, { status: 400 })
@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
     const platformInstructions = getPlatformInstructions(platform)
     const toneInstructions = getToneInstructions(tone)
     const lengthInstructions = getLengthInstructions(lineCount)
+    const languageInstructions = getLanguageInstructions(language)
+    const customInstructions = getCustomInstructions(customPrompt)
 
     const prompt = `
       You are a professional social media content creator.
@@ -31,6 +33,10 @@ export async function POST(request: NextRequest) {
       ${toneInstructions}
       
       ${lengthInstructions}
+      
+      ${languageInstructions}
+      
+      ${customInstructions}
       
       Include relevant hashtags where appropriate.
       
@@ -131,4 +137,99 @@ function getLengthInstructions(lineCount: number): string {
   }
 
   return `Create an extremely detailed and comprehensive post with exactly ${lineCount} lines of content. Use a combination of paragraphs, bullet points, numbered lists, and other formatting to reach exactly ${lineCount} lines. This should be an in-depth analysis or story based on the text.`
+}
+
+function getLanguageInstructions(language: string): string {
+  if (!language || language === "english") {
+    return "Write the content in English."
+  }
+
+  // Handle regional variants
+  const languageMap: { [key: string]: string } = {
+    spanish: "Spanish",
+    spanish_mx: "Mexican Spanish with Mexican cultural references and expressions",
+    spanish_ar: "Argentinian Spanish with Argentinian cultural references and expressions",
+    german: "German",
+    french: "French",
+    french_ca: "Canadian French (Québécois) with Canadian cultural references",
+    hindi: "Hindi",
+    urdu: "Urdu",
+    arabic: "Arabic",
+    chinese: "Simplified Chinese (Mandarin)",
+    chinese_traditional: "Traditional Chinese",
+    japanese: "Japanese",
+    korean: "Korean",
+    portuguese: "Portuguese",
+    portuguese_br: "Brazilian Portuguese with Brazilian cultural references and expressions",
+    russian: "Russian",
+    italian: "Italian",
+    dutch: "Dutch",
+    swedish: "Swedish",
+    norwegian: "Norwegian",
+    danish: "Danish",
+    finnish: "Finnish",
+    polish: "Polish",
+    czech: "Czech",
+    hungarian: "Hungarian",
+    romanian: "Romanian",
+    bulgarian: "Bulgarian",
+    greek: "Greek",
+    turkish: "Turkish",
+    hebrew: "Hebrew",
+    persian: "Persian (Farsi)",
+    bengali: "Bengali",
+    tamil: "Tamil",
+    telugu: "Telugu",
+    marathi: "Marathi",
+    gujarati: "Gujarati",
+    punjabi: "Punjabi",
+    thai: "Thai",
+    vietnamese: "Vietnamese",
+    indonesian: "Indonesian",
+    malay: "Malay",
+    tagalog: "Tagalog (Filipino)",
+    swahili: "Swahili",
+    amharic: "Amharic",
+    yoruba: "Yoruba",
+    hausa: "Hausa",
+    igbo: "Igbo",
+    zulu: "Zulu",
+    afrikaans: "Afrikaans",
+    ukrainian: "Ukrainian",
+    croatian: "Croatian",
+    serbian: "Serbian",
+    slovenian: "Slovenian",
+    slovak: "Slovak",
+    lithuanian: "Lithuanian",
+    latvian: "Latvian",
+    estonian: "Estonian",
+    maltese: "Maltese",
+    icelandic: "Icelandic",
+    irish: "Irish (Gaelic)",
+    welsh: "Welsh",
+    basque: "Basque",
+    catalan: "Catalan",
+    galician: "Galician",
+    english_uk: "British English with British cultural references and expressions",
+    english_au: "Australian English with Australian cultural references and expressions",
+    english_in: "Indian English with Indian cultural references and expressions",
+  }
+
+  const targetLanguage = languageMap[language] || language
+
+  return `Write the content entirely in ${targetLanguage}. Use natural expressions, idioms, and cultural references appropriate for native speakers of this language. Do not include any English text except for brand names, hashtags, or technical terms that are commonly used in ${targetLanguage}. Make sure the tone and style feel authentic to native speakers of this language.`
+}
+
+function getCustomInstructions(customPrompt: string): string {
+  if (!customPrompt || customPrompt.trim() === "") {
+    return ""
+  }
+
+  return `
+    IMPORTANT: The user has provided specific instructions for the content. Please prioritize and incorporate these custom requirements:
+    
+    "${customPrompt}"
+    
+    Make sure to follow these custom instructions while still maintaining the platform-appropriate format.
+  `
 }

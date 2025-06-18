@@ -1,9 +1,9 @@
-import { ContentGenerator } from "@/components/content-generator"
+import { MainTabs } from "@/components/main-tabs"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <main className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="space-y-8">
           <div className="text-center space-y-4">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-4">
@@ -18,7 +18,7 @@ export default function Home() {
               Transform your images and videos into engaging social media content with the power of AI ✨
             </p>
           </div>
-          <ContentGenerator />
+          <MainTabs />
         </div>
       </main>
     </div>

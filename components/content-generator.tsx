@@ -9,6 +9,8 @@ import { ContentDisplay } from "@/components/content-display"
 import { PlatformSelector } from "@/components/platform-selector"
 import { ToneSelector } from "@/components/tone-selector"
 import { LineCountSelector } from "@/components/line-count-selector"
+import { LanguageSelector, type Language } from "@/components/language-selector"
+import { CustomPromptInput } from "@/components/custom-prompt-input"
 import { Loader2, Sparkles, Zap } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -27,6 +29,8 @@ export function ContentGenerator() {
   const [platform, setPlatform] = useState<Platform>("instagram")
   const [tone, setTone] = useState<Tone>("casual")
   const [lineCount, setLineCount] = useState<number>(10)
+  const [language, setLanguage] = useState<Language>("english")
+  const [customPrompt, setCustomPrompt] = useState<string>("")
   const [content, setContent] = useState<string>("")
   const [extractedText, setExtractedText] = useState<string>("")
   const [isGenerating, setIsGenerating] = useState(false)
@@ -85,6 +89,8 @@ export function ContentGenerator() {
           platform,
           tone,
           lineCount,
+          language,
+          customPrompt,
         }),
       })
 
@@ -132,6 +138,8 @@ export function ContentGenerator() {
       formData.append("platform", platform)
       formData.append("tone", tone)
       formData.append("lineCount", lineCount.toString())
+      formData.append("language", language)
+      formData.append("customPrompt", customPrompt)
 
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -161,6 +169,12 @@ export function ContentGenerator() {
       setIsGenerating(false)
     }
   }
+
+  const handleUseCustomPrompt = () => {
+    handleGenerate()
+  }
+
+  const hasMedia = (activeTab === "image" && image) || (activeTab === "video" && video)
 
   return (
     <div className="space-y-6">
@@ -216,9 +230,26 @@ export function ContentGenerator() {
                 {/* Extracted Text Display */}
                 {extractedText && <ExtractedTextDisplay text={extractedText} onUseText={handleUseExtractedText} />}
 
-                {/* Line Count Selector */}
-                <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
-                  <LineCountSelector lineCount={lineCount} setLineCount={setLineCount} />
+                {/* Custom Prompt Input */}
+                <CustomPromptInput
+                  customPrompt={customPrompt}
+                  setCustomPrompt={setCustomPrompt}
+                  onUsePrompt={handleUseCustomPrompt}
+                  isGenerating={isGenerating}
+                  hasMedia={hasMedia}
+                />
+
+                {/* Settings Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Line Count Selector */}
+                  <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
+                    <LineCountSelector lineCount={lineCount} setLineCount={setLineCount} />
+                  </div>
+
+                  {/* Language Selector */}
+                  <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                    <LanguageSelector language={language} setLanguage={setLanguage} />
+                  </div>
                 </div>
 
                 {/* Platform Selection */}
@@ -243,26 +274,29 @@ export function ContentGenerator() {
                 <Button
                   onClick={handleGenerate}
                   className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 hover:from-purple-600 hover:via-blue-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                  disabled={isGenerating || (activeTab === "image" && !image) || (activeTab === "video" && !video)}
+                  disabled={isGenerating || !hasMedia}
                 >
                   {isGenerating ? (
                     <>
                       <Loader2 className="mr-3 h-5 w-5 animate-spin" />
                       <span className="animate-pulse">
-                        Creating {lineCount} lines of {activeTab === "video" ? "video" : "image"} content...
+                        Creating {lineCount} lines in {language}...
                       </span>
                     </>
                   ) : (
                     <>
                       <Zap className="mr-3 h-5 w-5" />
-                      Generate {lineCount} Lines of Content ✨
+                      {customPrompt
+                        ? "Generate with Custom Prompt"
+                        : `Generate in ${language.charAt(0).toUpperCase() + language.slice(1)}`}{" "}
+                      ✨
                     </>
                   )}
                 </Button>
               </div>
 
               {/* Right Column - Content Display */}
-              <ContentDisplay content={content} isLoading={isGenerating} platform={platform} />
+              <ContentDisplay content={content} isLoading={isGenerating} platform={platform} language={language} />
             </div>
           </CardContent>
         </div>
