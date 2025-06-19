@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 // Default API key
-const DEFAULT_API_KEY = "AIzaSyB8ZE3ZiN-Tl72Xc_LxvO_fyIiR_2z4p2Q"
+const DEFAULT_API_KEY = "AIzaSyAKFaE1aDR-_zf_NxuKFFsCTvG_2bD4V3g"
 
 // Retry configuration
 const MAX_RETRIES = 3
